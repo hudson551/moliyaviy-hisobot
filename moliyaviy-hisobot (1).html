@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moliyaviy hisobot</title>
+<style>
+:root{
+  --bg:#f3f5f2;--card:#ffffff;--ink:#16211b;--mut:#6b7a72;--line:#e4e9e5;--soft:#f7f9f7;
+  --acc:#1d5b44;--acc2:#2a7a5b;--side:#14392c;--ok:#1d7a4f;--okbg:#e9f6ef;--bad:#b4402e;--badbg:#fbeeea;
+  --r:16px;--shadow:0 1px 2px rgba(20,40,30,.05),0 6px 18px rgba(20,40,30,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);display:flex;min-height:100vh;-webkit-font-smoothing:antialiased}
+nav{width:248px;background:var(--side);color:#fff;padding:22px 14px;display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+nav h1{font-size:17px;font-weight:700;margin:0 8px 18px;display:flex;align-items:center;gap:12px;letter-spacing:-.01em}
+nav h1::before{content:"";width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.12);display:inline-grid;place-items:center}
+nav h1+button{margin-top:0}
+nav button{background:none;border:0;color:#b9cbc1;text-align:left;padding:11px 14px;border-radius:12px;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;transition:background .15s,color .15s}
+nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+nav button.act{background:rgba(255,255,255,.12);color:#fff}
+main{flex:1;padding:30px 36px;overflow:auto;min-width:0}
+.sec{display:none}.sec.on{display:block}
+h2{margin:0 0 24px;font-size:26px;font-weight:700;letter-spacing:-.02em}
+h3{margin:0 0 14px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+.grid{display:grid;gap:14px}
+.g5{grid-template-columns:repeat(5,1fr)}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+label{font-size:12px;font-weight:600;color:var(--mut);display:block;margin-bottom:7px;letter-spacing:.02em}
+input{width:100%;padding:13px 15px;font-size:17px;font-family:inherit;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);font-variant-numeric:tabular-nums;transition:border-color .15s,box-shadow .15s}
+input:focus{outline:none;border-color:var(--acc2);box-shadow:0 0 0 3px rgba(42,122,91,.16)}
+.val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stat{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px}
+.stat small{display:block;font-size:12px;font-weight:600;color:var(--mut);margin-bottom:8px}
+.stat input{font-size:16px;padding:10px 12px;background:#fff}
+button.big{width:100%;padding:15px;font-size:16px;font-family:inherit;border:0;border-radius:12px;background:var(--acc);color:#fff;cursor:pointer;font-weight:600;box-shadow:0 2px 6px rgba(29,91,68,.22);transition:background .15s,transform .05s}
+button.big:hover{background:#174d3a}
+button.big:active{transform:translateY(1px)}
+button.sm{padding:9px 14px;border:1px solid var(--line);background:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-family:inherit;font-weight:600;color:var(--acc)}
+button.sm:hover{background:var(--soft)}
+.tabs{display:inline-flex;gap:4px;padding:5px;background:#e7ece8;border-radius:14px;flex-wrap:wrap;margin-bottom:18px}
+.tabs button{padding:9px 18px;border:0;background:transparent;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;color:var(--mut)}
+.tabs button.on{background:var(--acc);color:#fff;box-shadow:0 2px 6px rgba(29,91,68,.25)}
+table{width:100%;border-collapse:separate;border-spacing:0;font-variant-numeric:tabular-nums}
+th,td{padding:13px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:15px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);font-weight:600;background:var(--soft)}
+tr:hover td{background:#fafcfa}
+table input{font-size:14px;padding:8px 10px;border-radius:10px}
+.cols{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px}
+.col{min-width:144px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;flex-shrink:0;box-shadow:var(--shadow)}
+.col b{font-size:13px;color:var(--mut);font-weight:600}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal>b{font-size:12px;font-weight:600;color:var(--mut);text-align:center;padding:6px 0}
+.cal>div{min-height:72px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;font-size:13px;cursor:pointer;transition:border-color .15s}
+.cal>div:hover{border-color:#9dc7b3}
+.cal>div.none{background:none;border:0;cursor:default}
+.cal>div.e{background:var(--okbg);border-color:#bfe3cf}
+.cal>div.e small{display:block;color:var(--ok);font-weight:700;font-variant-numeric:tabular-nums;margin-top:4px}
+.cal>div.sel{box-shadow:0 0 0 2px var(--acc2);border-color:var(--acc2)}
+.neg{color:var(--bad)}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+#sof{background:var(--okbg);border-color:#bfe3cf}
+#sf{color:var(--ok)}
+#alc .stat:nth-child(-n+3) .val{color:var(--acc)}
+.btnrow{display:flex;gap:10px;margin:0 0 18px}
+.btnrow button.big{width:auto;flex:0 0 190px;padding:11px 16px;font-size:15px}
+</style>
+</head>
+<body>
+<nav>
+  <h1>Moliyaviy hisobot</h1>
+  <button class="act" data-s="home">Bosh sahifa</button>
+  <button data-s="tush">Tushum</button>
+  <button data-s="xar">Xarajat</button>
+  <button data-s="uy">Uy</button>
+  <button data-s="mak">Maktab</button>
+  <button data-s="naq">Naqd pul</button>
+  <button data-s="kar">Karta</button>
+  <button data-s="his">Hisobotlar</button>
+  <button data-s="soz">Sozlamalar</button>
+</nav>
+
+<main>
+<section id="home" class="sec on">
+  <h2>Bosh sahifa</h2>
+  <div class="card">
+    <div class="grid g2">
+      <div>
+        <label>Sana (kk.oo.yyyy)</label>
+        <div class="row" style="gap:8px"><input id="dt" inputmode="numeric" maxlength="10"><button class="sm" onclick="pick(iso(new Date()))">Bugun</button></div>
+      </div>
+      <div>
+        <label>Izoh</label>
+        <input id="izoh" placeholder="Masalan: 1-o'yin">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Tushum</h3>
+    <div class="grid g3">
+      <div><label>Tushum (so'm)</label><input id="t" inputmode="numeric"></div>
+      <div><label>Naqd pul</label><input id="n" inputmode="numeric"></div>
+      <div><label>Karta</label><input id="k" inputmode="numeric"></div>
+    </div>
+  </div>
+
+  <div class="btnrow">
+    <button class="big" onclick="ajratish()">Ajratish</button>
+    <button class="big" onclick="saveDay()">Saqlash</button>
+  </div>
+
+  <div class="card" id="alc" style="display:none;margin-top:16px">
+    <h3>Ajratmalar</h3>
+    <div class="grid g5">
+      <div class="stat"><small>Koptok (tushum 1 100 000 dan)</small><div class="val" id="a_k">0 so'm</div></div>
+      <div class="stat"><small>Maktab (40%)</small><div class="val" id="a_m">0 so'm</div></div>
+      <div class="stat"><small>Uy (60%)</small><div class="val" id="a_u">0 so'm</div></div>
+      <div class="stat"><small>Remont (uydan)</small><input id="rm" inputmode="numeric"></div>
+      <div class="stat"><small>Sevinch (uydan)</small><input id="sv" inputmode="numeric"></div>
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="stat"><small>Uy</small><div class="val" id="a_uy2">0 so'm</div></div>
+      <div class="stat"><small>Naqddan chiqadigan jami</small><div class="val" id="a_out">0 so'm</div></div>
+    </div>
+  </div>
+
+
+  <div class="card" id="sof" style="display:none;margin-top:16px">
+    <h3>Sof foyda</h3>
+    <div class="grid g3">
+      <div class="stat"><small>Jami sof foyda</small><div class="val" id="sf">0 so'm</div></div>
+      <div class="stat"><small>Naqd qismi</small><div class="val" id="sfn">0 so'm</div></div>
+      <div class="stat"><small>Karta qismi</small><div class="val" id="sfk">0 so'm</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="row" style="margin-bottom:12px">
+      <h3 id="calt" style="margin:0">Kalendar</h3>
+      <div style="display:flex;gap:8px"><button class="sm" onclick="calNav(-1)">◀</button><button class="sm" onclick="calNav(1)">▶</button></div>
+    </div>
+    <div class="cal" id="calg"></div>
+  </div>
+</section>
+
+<section id="tush" class="sec">
+  <h2>Tushum</h2>
+  <div class="grid g5">
+    <div class="stat"><small>Kunlik</small><div class="val" id="st_d">0</div></div>
+    <div class="stat"><small>Haftalik</small><div class="val" id="st_w">0</div></div>
+    <div class="stat"><small>Oylik</small><div class="val" id="st_m">0</div></div>
+    <div class="stat"><small>Yillik</small><div class="val" id="st_y">0</div></div>
+    <div class="stat"><small>Umumiy</small><div class="val" id="st_a">0</div></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="tabs" id="tabs">
+      <button data-p="kun">Kun</button>
+      <button data-p="hafta">Hafta</button>
+      <button data-p="oy">Oy</button>
+      <button data-p="yil">Yil</button>
+      <button data-p="barchasi">Barchasi</button>
+      <button data-p="davr">Davr</button>
+    </div>
+    <div id="pout"></div>
+  </div>
+</section>
+
+<section id="xar" class="sec"><h2>Xarajat</h2><div class="card">Keyingi bosqichda qo'shiladi.</div></section>
+<section id="uy" class="sec"><h2>Uy</h2><div class="card">Keyingi bosqichda qo'shiladi.</div></section>
+<section id="mak" class="sec"><h2>Maktab</h2><div class="card">Keyingi bosqichda qo'shiladi.</div></section>
+<section id="naq" class="sec"><h2>Naqd pul</h2><div class="card">Keyingi bosqichda qo'shiladi.</div></section>
+<section id="kar" class="sec"><h2>Karta</h2><div class="card">Keyingi bosqichda qo'shiladi.</div></section>
+<section id="his" class="sec"><h2>Hisobotlar</h2><div class="card">Keyingi bosqichda qo'shiladi.</div></section>
+<section id="soz" class="sec"><h2>Sozlamalar</h2><div class="card">Keyingi bosqichda qo'shiladi.</div></section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const MON=['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+let D={};try{D=JSON.parse(localStorage.getItem('sv_fin')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('sv_fin',JSON.stringify(D))}catch(e){}};
+const num=s=>Number(String(s).replace(/\D/g,''))||0;
+const fmt=n=>(n<0?'-':'')+String(Math.abs(Math.round(n))).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+" so'm";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const toD=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const dmy=s=>s.split('-').reverse().join('.');
+function parseDMY(s){const m=s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);if(!m)return null;const d=new Date(+m[3],+m[2]-1,+m[1]);return d.getDate()==+m[1]?iso(d):null}
+const mon=s=>{const d=toD(s);d.setDate(d.getDate()-((d.getDay()+6)%7));return iso(d)};
+const ym=s=>s.slice(0,7), yr=s=>s.slice(0,4);
+const inR=(d,a,b)=>d>=a&&d<=b;
+
+let cur=iso(new Date()), calM=cur.slice(0,7), per='kun', yMonth=null, pRange=null, last='n';
+
+const recs=()=>Object.keys(D).sort().map(d=>({d,...D[d]}));
+const sumR=L=>L.reduce((s,r)=>s+(r.t||0),0);
+
+function A(){
+  const t=num($('t').value),n=num($('n').value),k=num($('k').value),rm=num($('rm').value),sv=num($('sv').value);
+  const kop=t>=1100000?100000:0;
+  const base=t-kop, mak=Math.round(base*0.4), uy=base-mak, out=kop+mak+rm+sv;
+  return{t,n,k,rm,sv,kop,mak,uy,out,sof:uy-rm-sv,sN:n-out,sK:k};
+}
+function alloc(){
+  const a=A();
+  $('a_k').textContent=fmt(a.kop);$('a_m').textContent=fmt(a.mak);$('a_u').textContent=fmt(a.uy);
+  $('a_uy2').textContent=fmt(a.uy-a.rm-a.sv);$('a_out').textContent=fmt(a.out);
+}
+function ajratish(){$('alc').style.display='block';alloc()}
+function showSof(a){
+  $('sof').style.display='block';
+  $('sf').textContent=fmt(a.sof);$('sfn').textContent=fmt(a.sN);$('sfk').textContent=fmt(a.sK);
+  $('sfn').className='val'+(a.sN<0?' neg':'');
+}
+function saveDay(){
+  const a=A();
+  if(!a.t){alert("Tushumni kiriting");return}
+  D[cur]={t:a.t,n:a.n,k:a.k,rm:a.rm,sv:a.sv,izoh:$('izoh').value.trim(),kop:a.kop,mak:a.mak,uy:a.uy,sof:a.sof,sN:a.sN,sK:a.sK};
+  save();ajratish();showSof(a);renderAll();
+}
+function loadDay(){
+  const r=D[cur]||{};
+  $('t').value=r.t||'';$('n').value=r.n??'';$('k').value=r.k??'';
+  $('rm').value=r.rm??100000;$('sv').value=r.sv??40000;$('izoh').value=r.izoh||'';
+  last='n';
+  if(r.t){ajratish();showSof(A())}else{$('alc').style.display='none';$('sof').style.display='none'}
+  alloc();
+}
+function setDay(k){cur=k;calM=k.slice(0,7);$('dt').value=dmy(k);loadDay();renderAll()}
+function pick(k){setDay(k)}
+function calNav(dir){const[y,m]=calM.split('-').map(Number);calM=iso(new Date(y,m-1+dir,1)).slice(0,7);renderCal()}
+
+$('t').oninput=()=>{
+  const t=num($('t').value);
+  if(last==='k')$('n').value=Math.max(0,t-num($('k').value));
+  else $('k').value=Math.max(0,t-num($('n').value));
+  alloc();
+};
+$('n').oninput=()=>{last='n';$('k').value=Math.max(0,num($('t').value)-num($('n').value));alloc()};
+$('k').oninput=()=>{last='k';$('n').value=Math.max(0,num($('t').value)-num($('k').value));alloc()};
+$('rm').oninput=alloc;$('sv').oninput=alloc;
+$('dt').oninput=e=>{
+  let v=e.target.value.replace(/\D/g,'').slice(0,8);
+  let o=v.slice(0,2);if(v.length>2)o+='.'+v.slice(2,4);if(v.length>4)o+='.'+v.slice(4);
+  e.target.value=o;
+  const p=parseDMY(o);if(p)setDay(p);
+};
+
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('act',x===b));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on',s.id===b.dataset.s));
+  if(b.dataset.s==='tush')renderAll();
+});
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{per=b.dataset.p;renderPeriod()});
+
+function renderStats(){
+  const R=recs();
+  $('st_d').textContent=fmt(sumR(R.filter(r=>r.d===cur)));
+  $('st_w').textContent=fmt(sumR(R.filter(r=>inR(r.d,mon(cur),cur))));
+  $('st_m').textContent=fmt(sumR(R.filter(r=>ym(r.d)===ym(cur))));
+  $('st_y').textContent=fmt(sumR(R.filter(r=>yr(r.d)===yr(cur))));
+  $('st_a').textContent=fmt(sumR(R));
+}
+function cols(days){
+  return '<div class="cols">'+days.map(d=>{const r=D[d];
+    return `<div class="col"><b>${dmy(d)}</b><div class="val" style="font-size:17px;margin:6px 0">${r?fmt(r.t):'—'}</div><small>${r?esc(r.izoh||''):''}</small></div>`;
+  }).join('')+'</div>';
+}
+function tbl(L){
+  if(!L.length)return '<p style="color:#6b7385">Yozuv yo\'q</p>';
+  return '<table><tr><th>Sana</th><th>Pul miqdori</th><th>Izoh</th><th></th></tr>'+
+    L.map(r=>`<tr><td>${dmy(r.d)}</td><td>${fmt(r.t)}</td><td><input value="${esc(r.izoh||'')}" onchange="setIzoh('${r.d}',this.value)" style="font-size:15px;padding:8px"></td><td><button onclick="delRec('${r.d}')" style="border:0;background:none;color:#d64545;font-size:18px;cursor:pointer">✕</button></td></tr>`).join('')+
+    `<tr><th>Jami</th><th>${fmt(sumR(L))}</th><th colspan="2"></th></tr></table>`;
+}
+function setIzoh(d,v){D[d].izoh=v;save();if(d===cur)$('izoh').value=v;renderPeriod()}
+function delRec(d){if(!confirm("Yozuv o'chirilsinmi?"))return;delete D[d];save();if(d===cur)loadDay();renderAll()}
+function applyDavr(){
+  const a=parseDMY($('pf').value),b=parseDMY($('pt').value);
+  if(!a||!b){alert("Sanani kk.oo.yyyy shaklida kiriting");return}
+  pRange=a<=b?[a,b]:[b,a];renderPeriod();
+}
+function renderPeriod(){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.p===per));
+  const R=recs();
+  let head='', body='', L=null;
+  if(per==='kun'){
+    L=R.filter(r=>r.d===cur);
+    body=tbl(L);
+  }
+  else if(per==='hafta'){
+    const days=[];let s=toD(mon(cur));const e=toD(cur);
+    while(s<=e){days.push(iso(s));s.setDate(s.getDate()+1)}
+    body=cols(days);
+  }
+  else if(per==='oy'){
+    const y=+cur.slice(0,4),m=+cur.slice(5,7),n=new Date(y,m,0).getDate();
+    const days=[...Array(n)].map((_,i)=>y+'-'+pad(m)+'-'+pad(i+1));
+    body=cols(days);
+  }
+  else if(per==='yil'){
+    const y=cur.slice(0,4);
+    head='<div class="grid g3" style="margin-bottom:16px">'+MON.map((nm,i)=>{
+      const k=y+'-'+pad(i+1);
+      return `<div class="stat" style="cursor:pointer;${yMonth===k?'outline:2px solid #1f5eff':''}" onclick="yMonth='${k}';renderPeriod()"><small>${nm}</small><div class="val">${fmt(sumR(R.filter(r=>ym(r.d)===k)))}</div></div>`;
+    }).join('')+'</div>';
+    if(yMonth){L=R.filter(r=>ym(r.d)===yMonth);body=tbl(L)}
+    else body='<p style="color:#6b7385">Oyni tanlang</p>';
+  }
+  else if(per==='barchasi'){
+    L=R;body=tbl(L);
+  }
+  else if(per==='davr'){
+    head=`<div class="grid g3" style="margin-bottom:16px"><div><label>Boshlanish</label><input id="pf" value="${dmy(pRange?pRange[0]:cur)}"></div><div><label>Tugash</label><input id="pt" value="${dmy(pRange?pRange[1]:cur)}"></div><div style="display:flex;align-items:flex-end"><button class="big" onclick="applyDavr()">Tasdiqlash</button></div></div>`;
+    if(pRange){L=R.filter(r=>inR(r.d,pRange[0],pRange[1]));body=tbl(L)}
+    else body='<p style="color:#6b7385">Davrni tanlab Tasdiqlash ni bosing</p>';
+  }
+  const showTitle=(per==='kun'||per==='yil'||per==='barchasi'||per==='davr');
+  const title=(showTitle?'<h3 style="margin:20px 0 12px">Yozuvlar</h3>':'<h3 style="margin:0 0 12px">Yozuvlar</h3>');
+  $('pout').innerHTML=head+title+body;
+}
+function renderCal(){
+  const[y,m]=calM.split('-').map(Number);
+  const off=(new Date(y,m-1,1).getDay()+6)%7, n=new Date(y,m,0).getDate();
+  let h=['Du','Se','Ch','Pa','Ju','Sh','Ya'].map(w=>`<b>${w}</b>`).join('');
+  for(let i=0;i<off;i++)h+='<div class="none"></div>';
+  for(let d=1;d<=n;d++){
+    const k=calM+'-'+pad(d), r=D[k];
+    h+=`<div class="${k===cur?'sel ':''}${r?'e':''}" onclick="pick('${k}')"><b>${d}</b>${r?'<br><small>'+fmt(r.t)+'</small>':''}</div>`;
+  }
+  $('calg').innerHTML=h;
+  $('calt').textContent=MON[m-1]+' '+y;
+}
+function renderAll(){renderStats();renderPeriod();renderCal()}
+
+$('dt').value=dmy(cur);
+loadDay();
+renderAll();
+</script>
+</body>
+</html>
